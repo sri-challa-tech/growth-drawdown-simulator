@@ -102,8 +102,10 @@ export default function App() {
         Model your retirement across all accounts with tax-aware projections through age 90.
       </p>
       <p className="privacy-note">
-        🔒 <strong>Your privacy:</strong> Everything runs in your browser. Your inputs are never
-        saved, stored, or sent anywhere — closing or refreshing the page clears all data.
+        🔒 <strong>Your privacy:</strong> All your financial inputs stay in your browser and are
+        never saved, stored, or sent anywhere — closing or refreshing the page clears all data.
+        This site uses Google Analytics to anonymously track visits (page views only, no financial
+        information).
       </p>
 
       {!results ? (
