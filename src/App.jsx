@@ -27,6 +27,13 @@ const DEFAULT = {
   monthlyExpenses: '', annualTravelMisc: '', inflationRate: '',
 };
 
+// Fire a GA4 custom event, if analytics loaded (guards against ad blockers / dev env).
+function trackEvent(name, params) {
+  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+    window.gtag('event', name, params);
+  }
+}
+
 function fmtMoney(n) {
   if (n === undefined || n === null) return '—';
   const abs = Math.abs(n);
@@ -61,14 +68,25 @@ export default function App() {
 
   function calculate() {
     const err = validate();
-    if (err) { setError(err); return; }
+    if (err) {
+      setError(err);
+      trackEvent('calculate_click', { success: false, reason: 'validation' });
+      return;
+    }
     setError('');
     try {
       const rows = runSimulation(data);
       setResults(rows);
+      trackEvent('calculate_click', { success: true });
     } catch (e) {
       setError('Calculation error: ' + e.message);
+      trackEvent('calculate_click', { success: false, reason: 'exception' });
     }
+  }
+
+  function editInputs() {
+    setResults(null);
+    trackEvent('edit_inputs_click', {});
   }
 
   function getSummary(rows) {
@@ -137,7 +155,7 @@ export default function App() {
       ) : (
         <div className="results-section">
           <div className="results-topbar">
-            <button className="btn btn-secondary" onClick={() => setResults(null)}>
+            <button className="btn btn-secondary" onClick={editInputs}>
               ← Edit Inputs
             </button>
           </div>
