@@ -67,6 +67,7 @@ export default function About() {
 
           <h3>Other assumptions</h3>
           <ul>
+            <li>For couples, the spouse is assumed to retire in the same year as the user — there's a single retirement age input, not one per person.</li>
             <li>For couples, both spouses are assumed alive through the simulation (no survivor scenario). For a single filer, the spouse accounts/income are omitted and the projection runs to the user's age 90.</li>
             <li>Local/city income taxes (e.g. NYC, Maryland counties, OH/IN local) are not modeled.</li>
             <li>Washington's separate capital-gains tax is not modeled.</li>
