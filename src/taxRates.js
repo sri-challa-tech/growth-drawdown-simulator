@@ -50,12 +50,18 @@ export const STATE_TAX = {
   AK: { taxesSS:false, mfj:{brackets:[],std:0}, single:{brackets:[],std:0} },
   AZ: { taxesSS:false, mfj:{brackets:[[0,0.025]],std:16700}, single:{brackets:[[0,0.025]],std:8350} },
   AR: { taxesSS:false, mfj:{brackets:[[0,0.02],[4600,0.039]],std:4940}, single:{brackets:[[0,0.02],[4600,0.039]],std:2470} },
-  CA: { taxesSS:false, mfj:{brackets:[[0,0.01],[22158,0.02],[52528,0.04],[82904,0.06],[115084,0.08],[145448,0.093],[742958,0.103],[891542,0.113],[1000000,0.123],[1485906,0.133]],std:11080}, single:{brackets:[[0,0.01],[11079,0.02],[26264,0.04],[41452,0.06],[57542,0.08],[72724,0.093],[371479,0.103],[445771,0.113],[742953,0.123],[1000000,0.133]],std:5540} },
+  // CA: brackets are 2026 (FTB indexing factor 2.971%). Standard deduction was
+  // corrected from the 2025 values ($5,540 / $11,080) to 2026 ($5,706 / $11,412).
+  // NOTE: FTB had not published official 2026 rate schedules as of 2026-08; these
+  // come from the announced indexing factor applied to the 2025 schedule.
+  CA: { taxesSS:false, mfj:{brackets:[[0,0.01],[22158,0.02],[52528,0.04],[82904,0.06],[115084,0.08],[145448,0.093],[742958,0.103],[891542,0.113],[1000000,0.123],[1485906,0.133]],std:11412}, single:{brackets:[[0,0.01],[11079,0.02],[26264,0.04],[41452,0.06],[57542,0.08],[72724,0.093],[371479,0.103],[445771,0.113],[742953,0.123],[1000000,0.133]],std:5706} },
   CO: { taxesSS:true,  mfj:{brackets:[[0,0.044]],std:32200}, single:{brackets:[[0,0.044]],std:16100} },
   CT: { taxesSS:true,  mfj:{brackets:[[0,0.02],[20000,0.045],[100000,0.055],[200000,0.06],[400000,0.065],[500000,0.069],[1000000,0.0699]],std:0}, single:{brackets:[[0,0.02],[10000,0.045],[50000,0.055],[100000,0.06],[200000,0.065],[250000,0.069],[500000,0.0699]],std:0} },
   DE: { taxesSS:false, mfj:{brackets:[[0,0],[2000,0.022],[5000,0.039],[10000,0.048],[20000,0.052],[25000,0.0555],[60000,0.066]],std:6500}, single:{brackets:[[0,0],[2000,0.022],[5000,0.039],[10000,0.048],[20000,0.052],[25000,0.0555],[60000,0.066]],std:3250} },
   FL: { taxesSS:false, mfj:{brackets:[],std:0}, single:{brackets:[],std:0} },
-  GA: { taxesSS:false, mfj:{brackets:[[0,0.0519]],std:24000}, single:{brackets:[[0,0.0519]],std:12000} },
+  // GA: HB 463 (signed 2026-05-11, retroactive to 2026-01-01) cut the flat rate
+  // from 5.19% to 4.99% and raised the standard deduction to $30k MFJ / $15k single.
+  GA: { taxesSS:false, mfj:{brackets:[[0,0.0499]],std:30000}, single:{brackets:[[0,0.0499]],std:15000} },
   HI: { taxesSS:false, mfj:{brackets:[[0,0.014],[19200,0.032],[28800,0.055],[38400,0.064],[48000,0.068],[72000,0.072],[96000,0.076],[250000,0.079],[350000,0.0825],[450000,0.09],[550000,0.10],[650000,0.11]],std:8800}, single:{brackets:[[0,0.014],[9600,0.032],[14400,0.055],[19200,0.064],[24000,0.068],[36000,0.072],[48000,0.076],[125000,0.079],[175000,0.0825],[225000,0.09],[275000,0.10],[325000,0.11]],std:4400} },
   ID: { taxesSS:false, mfj:{brackets:[[0,0],[9622,0.053]],std:32200}, single:{brackets:[[0,0],[4811,0.053]],std:16100} },
   IL: { taxesSS:false, mfj:{brackets:[[0,0.0495]],std:0}, single:{brackets:[[0,0.0495]],std:0} },
@@ -138,9 +144,18 @@ export function taxableSS(ssIncome, otherIncome, status = 'mfj') {
   const { lower, upper } = SS_THRESHOLDS[status];
   const provisional = otherIncome + ssIncome * 0.5;
   if (provisional <= lower) return 0;
-  const midCap = (upper - lower) * 0.5; // 50%-taxable band ceiling
-  if (provisional <= upper) return Math.min(ssIncome, (provisional - lower) * 0.5);
-  return Math.min(ssIncome, midCap + (provisional - upper) * 0.85);
+
+  // Middle band: the lesser of 50% of the excess over the lower threshold,
+  // or 50% of the benefit itself.
+  if (provisional <= upper) {
+    return Math.min(0.5 * ssIncome, 0.5 * (provisional - lower));
+  }
+
+  // Upper band: 85% of the excess over the upper threshold, plus the amount
+  // carried over from the middle band — capped at 85% of the benefit. At least
+  // 15% of Social Security is always federally tax-free, by law.
+  const midCap = Math.min(0.5 * ssIncome, 0.5 * (upper - lower));
+  return Math.min(0.85 * ssIncome, midCap + 0.85 * (provisional - upper));
 }
 
 function stateInfo(stateCode) {

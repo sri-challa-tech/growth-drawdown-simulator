@@ -108,7 +108,16 @@ export function runSimulation(inputs) {
       rows.push({
         userAge: ua, spouseAge: sa, year, isRetired: false,
         withdrawals: { userPreTax:0, userRoth:0, userBrokerage:0, spousePreTax:0, spouseRoth:0, spouseBrokerage:0 },
-        balances: { ...balances },
+        // Report whole dollars, matching the retirement rows. Only this copy is
+        // rounded — the running `balances` stay exact so growth doesn't drift.
+        balances: {
+          userPreTax: fmt(balances.userPreTax),
+          userRoth: fmt(balances.userRoth),
+          userBrokerage: fmt(balances.userBrokerage),
+          spousePreTax: fmt(balances.spousePreTax),
+          spouseRoth: fmt(balances.spouseRoth),
+          spouseBrokerage: fmt(balances.spouseBrokerage),
+        },
         ssIncome: 0, otherIncome: 0, taxesPaid: 0, totalExpenses: 0,
       });
       continue;
@@ -187,7 +196,11 @@ export function runSimulation(inputs) {
         if (needed <= EPS) break;  // ignore sub-dollar gross-up residuals
         const avail = balances[acct];
         if (avail <= EPS) continue;  // treat sub-dollar balances as empty
-        const gross = grossUpPreTax(Math.min(needed, avail * 0.9), totalSS, other, stateCode, cumPreTax, status);
+        // Gross up the full remaining need. `actual` below caps the withdrawal at
+        // the balance, so the account drains completely before we move to the
+        // next one. (Capping the gross-up input at a fraction of the balance
+        // would strand money here and wrongly push the shortfall onward.)
+        const gross = grossUpPreTax(needed, totalSS, other, stateCode, cumPreTax, status);
         const actual = Math.min(avail, gross);
         const marginalTax = calcTotalTax(cumPreTax + actual, totalSS, other, stateCode, status).total
                           - calcTotalTax(cumPreTax, totalSS, other, stateCode, status).total;
