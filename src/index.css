@@ -29,6 +29,37 @@ h1 {
   margin-bottom: 6px;
 }
 
+.app-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px 16px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #4a5568;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.source-link:hover {
+  border-color: #4299e1;
+  color: #3182ce;
+  background: #ebf8ff;
+}
+
 h2 {
   font-size: 1.1rem;
   font-weight: 600;
