@@ -509,6 +509,18 @@ input:focus, select:focus {
   font-size: 0.78rem;
   color: #a0aec0;
   border-top: 1px solid #e2e8f0;
+  line-height: 1.6;
+}
+
+.app-footer a {
+  color: #718096;
+  text-decoration: none;
+  border-bottom: 1px solid #cbd5e0;
+}
+
+.app-footer a:hover {
+  color: #4299e1;
+  border-bottom-color: #4299e1;
 }
 
 @media (max-width: 640px) {

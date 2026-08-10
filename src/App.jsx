@@ -192,7 +192,15 @@ export default function App() {
       )}
 
       <footer className="app-footer">
-        Retirement Planner · Educational estimates only — not financial, tax, or investment advice.
+        Investment Growth &amp; Retirement Planner · Educational estimates only — not financial,
+        tax, or investment advice. ·{' '}
+        <a
+          href="https://github.com/sri-challa-tech/growth-drawdown-simulator"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          View source
+        </a>
       </footer>
     </div>
   );
