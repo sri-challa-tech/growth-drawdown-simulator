@@ -176,9 +176,14 @@ export default function Comments({ config, trackEvent = () => {} }) {
           <p className="cf-privacy">{config.privacyNote}</p>
         </div>
 
-        <p className="cf-error" role="alert">
-          {error}
-        </p>
+        {/* Rendered only when there is something to say. Reserving the space
+            would avoid a layout shift, but leaves dead space under the button
+            on every render where nothing is wrong, which is most of them. */}
+        {error && (
+          <p className="cf-error" role="alert">
+            {error}
+          </p>
+        )}
       </form>
     </section>
   )
