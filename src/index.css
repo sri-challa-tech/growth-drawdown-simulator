@@ -572,10 +572,10 @@ input:focus, select:focus {
   background: white;
   border-radius: 12px;
   padding: 22px;
-  /* .btn-row has no bottom margin, so the form needs its own top margin or
-     it butts against the Calculate button. Collapses with the results
-     card's 18px below, giving the same gap in both views. */
-  margin-top: 22px;
+  /* Deliberately larger than the gap between calculator cards, so the form
+     reads as a separate thing rather than another step in the flow. Also
+     supplies the space .btn-row lacks, since it has no bottom margin. */
+  margin-top: 48px;
   margin-bottom: 18px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
