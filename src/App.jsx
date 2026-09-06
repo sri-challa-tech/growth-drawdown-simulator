@@ -9,6 +9,8 @@ import ResultsChart from './components/ResultsChart';
 import ResultsTable from './components/ResultsTable';
 import About from './components/About';
 import AccordionSection from './components/AccordionSection';
+import Comments from './components/Comments';
+import { commentsConfig } from './comments.config';
 import { runSimulation } from './calculator';
 import { STATE_TAX } from './taxRates';
 
@@ -204,6 +206,11 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* Outside the results ternary on purpose: this puts the form below
+          the Calculate button before a run, and below the results table
+          after one, without duplicating it in both branches. */}
+      <Comments config={commentsConfig} trackEvent={trackEvent} />
 
       <footer className="app-footer">
         Investment Growth &amp; Retirement Planner · Educational estimates only — not financial,

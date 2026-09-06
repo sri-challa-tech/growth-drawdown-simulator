@@ -559,3 +559,155 @@ input:focus, select:focus {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------------------------------------------------------------------
+   Feedback form
+
+   The component in src/components/Comments.jsx is a byte-identical copy of
+   the one on srichalla.com. Only these styles and comments.config.js differ
+   between the two apps. Every class is namespaced cf-* so nothing here
+   collides with the planner's own .form-error or .privacy-note.
+   --------------------------------------------------------------------- */
+.cf-section {
+  background: white;
+  border-radius: 12px;
+  padding: 22px;
+  margin-bottom: 18px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.cf-heading {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.cf-intro {
+  margin: 0 0 18px;
+  max-width: 46rem;
+  font-size: 0.88rem;
+  color: #4a5568;
+  line-height: 1.6;
+}
+
+.cf-form {
+  max-width: 46rem;
+  display: grid;
+  gap: 14px;
+}
+
+.cf-field {
+  display: grid;
+  gap: 5px;
+}
+
+.cf-field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.cf-optional {
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: #a0aec0;
+}
+
+.cf-field input,
+.cf-field textarea {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  color: #2d3748;
+  font: inherit;
+  font-size: 0.92rem;
+}
+
+.cf-field textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+.cf-field input:focus,
+.cf-field textarea:focus {
+  outline: none;
+  border-color: #48bb78;
+  box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.15);
+}
+
+.cf-field input:disabled,
+.cf-field textarea:disabled {
+  opacity: 0.6;
+}
+
+.cf-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 640px) {
+  .cf-field-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Visually hidden, still reachable by bots that fill every input. */
+.cf-honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.cf-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 4px;
+}
+
+/* Matches .btn .btn-success without depending on those classes, so the
+   component stays free of the host app's button system. */
+.cf-submit {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 22px;
+  border: none;
+  border-radius: 8px;
+  background: #48bb78;
+  color: white;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.cf-submit:hover {
+  background: #38a169;
+}
+
+.cf-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.cf-privacy {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #718096;
+}
+
+.cf-error {
+  margin: 0;
+  min-height: 1.2em;
+  font-size: 0.88rem;
+  color: #e53e3e;
+}
