@@ -25,6 +25,16 @@ export default function Comments({ config, trackEvent = () => {} }) {
   const [website, setWebsite] = useState('') // honeypot, humans leave this empty
   const [status, setStatus] = useState('idle') // idle | sending | sent | error
   const [error, setError] = useState('')
+  const [started, setStarted] = useState(false)
+
+  // Fires once, on the first character typed into any field. Without it,
+  // someone who writes half a comment and leaves is indistinguishable from
+  // someone who never looked at the form, and those need opposite fixes.
+  function noteStarted() {
+    if (started) return
+    setStarted(true)
+    trackEvent('feedback_start', { source: config.source })
+  }
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -66,13 +76,20 @@ export default function Comments({ config, trackEvent = () => {} }) {
       return
     }
 
+    // Distinguishes a rejected request from one that never left the browser,
+    // which is the difference between a server bug and a network or CORS
+    // problem. A failure count alone cannot tell those apart.
+    let httpStatus = 0
     try {
       const response = await fetch(config.endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
-      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      if (!response.ok) {
+        httpStatus = response.status
+        throw new Error(`HTTP ${response.status}`)
+      }
       setStatus('sent')
       // No message text, only whether contact details came with it. The
       // comment itself belongs in the database, not in an analytics vendor.
@@ -86,7 +103,10 @@ export default function Comments({ config, trackEvent = () => {} }) {
       setError('That did not go through. Please try again in a moment.')
       // Worth knowing about. A form that silently fails looks identical to
       // a form nobody uses.
-      trackEvent('feedback_error', { source: config.source })
+      trackEvent('feedback_error', {
+        source: config.source,
+        status: httpStatus || 'network',
+      })
     }
   }
 
@@ -117,7 +137,7 @@ export default function Comments({ config, trackEvent = () => {} }) {
             rows={5}
             maxLength={MAX_MESSAGE}
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={(e) => { noteStarted(); setMessage(e.target.value) }}
             disabled={sending}
             required
           />
@@ -134,7 +154,7 @@ export default function Comments({ config, trackEvent = () => {} }) {
               type="text"
               maxLength={MAX_NAME}
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => { noteStarted(); setName(e.target.value) }}
               disabled={sending}
             />
           </div>
@@ -149,7 +169,7 @@ export default function Comments({ config, trackEvent = () => {} }) {
               type="email"
               maxLength={MAX_EMAIL}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => { noteStarted(); setEmail(e.target.value) }}
               disabled={sending}
             />
           </div>
