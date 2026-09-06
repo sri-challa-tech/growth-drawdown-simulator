@@ -23,8 +23,12 @@
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-FGLRR598JK');
+      // Skip local development. Without this every dev session is a real
+      // session in the reports, which at low traffic drowns out actual users.
+      if (!/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) {
+        gtag('js', new Date());
+        gtag('config', 'G-FGLRR598JK');
+      }
     </script>
   </head>
   <body>
